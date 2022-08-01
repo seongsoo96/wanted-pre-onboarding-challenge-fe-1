@@ -1,12 +1,23 @@
-import { Link } from 'react-router-dom';
+import { BrowserRouter, Link, Route, Router, Routes } from 'react-router-dom';
 import Button from './components/Button';
+import Join from './pages/auth/Join';
+import Login from './pages/auth/Login';
+import Home from './pages/Home';
+import Todo from './pages/todo/Todo';
 
 function App() {
   return (
     <>
-      <Button type="login">로그인</Button>
-      <Button type="signup">회원가입</Button>
-      <Button type="todo">Todo List</Button>
+      <BrowserRouter>
+        <Routes>
+          <>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/join" element={<Join />} />
+            <Route path="/todo/:id" element={<Todo />} />
+          </>
+        </Routes>
+      </BrowserRouter>
     </>
   );
 }

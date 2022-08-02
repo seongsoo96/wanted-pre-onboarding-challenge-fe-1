@@ -37,16 +37,16 @@ const Button = styled.button`
   font-size: 1.25rem;
   font-weight: 500;
 
-  cursor: pointer;
+  cursor: ${props => props.validation ? 'pointer' : 'default'};;
   user-select: none;
   transition: .2s all;
 
   &:hover {
-      background: green};
+      background: ${props => props.validation ? 'green' : null};
   }
 
   &:active {
-      background: skyblue;
+      background: ${props => props.validation ? 'skyblue' : null};;
   }
 `;
 
@@ -72,7 +72,12 @@ export default function Join() {
   const [passwordCheck, setPasswordCheck] = useState(false);
 
   const handleEmailChange = (e) => {
-    
+    setEmail(e.target.value);
+    setEmailCheck(email.includes("@") && email.includes("."));
+  }
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    setPasswordCheck(password.length > 7);
   }
 
   const handleSubmit = async (e) => {
@@ -80,9 +85,7 @@ export default function Join() {
     console.log(email);
     console.log(password);
 
-    const emailCheck = email.includes("@") && email.includes(".") || false;
     console.log(emailCheck);
-    const passwordCheck = password.length >= 8;
     if(emailCheck && password) {
       axios
       .post('http://localhost:8080/users/create', {
@@ -108,9 +111,9 @@ export default function Join() {
           type="email"
           value={email}
           placeholder="이메일을 입력해주세요"
-          onChange={e => setEmail(e.target.value)}
+          onChange={handleEmailChange}
         />
-        <Validation>{!emailCheck ? '이메일은 @와 .이 포함되어야 합니다.' : null}</Validation>
+        <Validation>{!emailCheck ? '이메일은 @와 .이 포함되어야 합니다.' : ''}</Validation>
         <Label htmlFor="password">비밀번호</Label>
         <Input
           id="password"
@@ -118,10 +121,10 @@ export default function Join() {
           type="password"
           value={password}
           placeholder="비밀번호를 입력해주세요"
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={handlePasswordChange}
           />
-        <Validation>비밀번호 오류</Validation>
-        <Button>가입하기</Button>
+        <Validation>{!passwordCheck ? '비밀번호는 최소 8자 이상이어야 합니다.' : ''}</Validation>
+        <Button validation={emailCheck && passwordCheck} disabled={emailCheck && passwordCheck ? false : true}>가입하기</Button>
       </Form>
     </Wrapper>
   );

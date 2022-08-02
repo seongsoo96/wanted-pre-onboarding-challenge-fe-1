@@ -1,16 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import Button from '../components/Button';
+
+const Wrapper = styled.div`
+  text-align: center;
+  margin: 0 auto;
+
+`;
 
 function Home() {
   return (
-    <div>
-      <Link to="/login">
-        <button>로그인</button>
+    <Wrapper>
+      <Link to="/auth">
+        <Button>로그인/회원가입</Button>
       </Link>
       <Link to="/join">
-        <button>회원가입</button>
+        <Button>회원가입</Button>
       </Link>
-    </div>
+    </Wrapper>
   );
 }
 

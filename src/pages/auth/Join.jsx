@@ -1,11 +1,11 @@
 import axios from 'axios';
 import React, { useState } from 'react';
-import { InputWithLabel } from '../../components/Auth';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const Form = styled.form`
   & + & {
-      margin-top: 1rem;
+    margin-top: 1rem;
   }
 `;
 
@@ -37,16 +37,16 @@ const Button = styled.button`
   font-size: 1.25rem;
   font-weight: 500;
 
-  cursor: ${props => props.validation ? 'pointer' : 'default'};;
+  cursor: ${(props) => (props.validation ? 'pointer' : 'default')};
   user-select: none;
-  transition: .2s all;
+  transition: 0.2s all;
 
   &:hover {
-      background: ${props => props.validation ? 'green' : null};
+    background: ${(props) => (props.validation ? 'green' : null)};
   }
 
   &:active {
-      background: ${props => props.validation ? 'skyblue' : null};;
+    background: ${(props) => (props.validation ? 'skyblue' : null)};
   }
 `;
 
@@ -62,7 +62,7 @@ const Title = styled.h1`
 const Validation = styled.p`
   margin: 5px 0 10px 0;
   color: red;
-  font-sise: 1rem;
+  font-size: 1rem;
 `;
 
 export default function Join() {
@@ -71,33 +71,30 @@ export default function Join() {
   const [emailCheck, setEmailCheck] = useState(false);
   const [passwordCheck, setPasswordCheck] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
-    setEmailCheck(email.includes("@") && email.includes("."));
-  }
+    setEmailCheck(e.target.value.includes('@') && e.target.value.includes('.'));
+  };
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
-    setPasswordCheck(password.length > 7);
-  }
+    setPasswordCheck(e.target.value.length > 7 ? true : false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(email);
-    console.log(password);
 
-    console.log(emailCheck);
-    if(emailCheck && password) {
-      axios
+    axios
       .post('http://localhost:8080/users/create', {
         email,
         password,
       })
       .then((res) => {
         console.log(res);
+        alert(res.data.message);
+        navigate('/');
       });
-    } else {
-      alert("이메일 비밀번호 체크")
-    }
   };
 
   return (
@@ -113,7 +110,11 @@ export default function Join() {
           placeholder="이메일을 입력해주세요"
           onChange={handleEmailChange}
         />
-        <Validation>{!emailCheck ? '이메일은 @와 .이 포함되어야 합니다.' : ''}</Validation>
+        <Validation>
+          {email.includes('@') && email.includes('.')
+            ? ''
+            : '이메일은 @와 .이 포함되어야 합니다.'}
+        </Validation>
         <Label htmlFor="password">비밀번호</Label>
         <Input
           id="password"
@@ -122,11 +123,16 @@ export default function Join() {
           value={password}
           placeholder="비밀번호를 입력해주세요"
           onChange={handlePasswordChange}
-          />
-        <Validation>{!passwordCheck ? '비밀번호는 최소 8자 이상이어야 합니다.' : ''}</Validation>
-        <Button validation={emailCheck && passwordCheck} disabled={emailCheck && passwordCheck ? false : true}>가입하기</Button>
+        />
+        <Validation>
+          {password.length < 8 ? '비밀번호는 최소 8자 이상이어야 합니다.' : ''}
+        </Validation>
+        <Button
+          validation={emailCheck && passwordCheck}
+          disabled={emailCheck && passwordCheck ? false : true}>
+          가입하기
+        </Button>
       </Form>
     </Wrapper>
   );
 }
-

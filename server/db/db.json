@@ -1,0 +1,12 @@
+{
+  "todos": [],
+  "users": [
+    {
+      "email": "admin@gmail.com",
+      "password": "admin00!@#",
+      "id": "eDq0GqP0_a2jD4CKICt9_",
+      "createdAt": "2022-08-05T02:28:37.211Z",
+      "updatedAt": "2022-08-05T02:28:37.211Z"
+    }
+  ]
+}

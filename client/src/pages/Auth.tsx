@@ -5,44 +5,64 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
 import axios from 'axios';
 import { isAnyArrayBuffer } from 'util/types';
-
-const Container = styled.div`
-  margin: 150px auto;
-  width: 300px;
-  height: 300px;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-`;
-
-const P = styled.p`
-  font-size: 0.8rem;
-  color: red;
-`;
-
-type Inputs = {
-  email: string;
-  password: string;
-};
+import { useNavigate } from 'react-router-dom';
 
 const url = 'http://127.0.0.1:8080';
+type FormType = 'login' | 'join';
 
 const Auth = () => {
+  const navigate = useNavigate();
+  let hasToken = localStorage.getItem('token') ? true : false;
+  const [isLogin, setIsLogin] = useState(hasToken);
+  const [formType, setFormType] = useState<FormType>('login');
+
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm<Inputs>();
+
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    console.log(data);
-    axios.post(`${url}/users/create`, data).then((res) => console.log(res));
+    // if (isLogin) {
+    //   return navigate('/');
+    // }
+
+    if (formType === 'login') {
+      axios
+        .post(`${url}/users/login`, data)
+        .then((res) => {
+          localStorage.setItem('token', res.data.token);
+          alert(res.data.message);
+          navigate('/');
+        })
+        .catch((err) => {
+          console.log(err);
+          alert(err.data.details);
+        });
+    }
+
+    if (formType === 'join') {
+      axios
+        .post(`${url}/users/create`, data)
+        .then((res) => {
+          alert(res.data.message);
+          navigate('/');
+        })
+        .catch((err) => {
+          console.log(err);
+          alert(err.data.details);
+        });
+    }
+  };
+
+  const onToggleFormType = () => {
+    if (formType === 'login') {
+      return setFormType('join');
+    }
+    if (formType === 'join') {
+      return setFormType('login');
+    }
   };
 
   return (
@@ -94,9 +114,11 @@ const Auth = () => {
             render={({ message }) => <P>{message}</P>}
           />
           <Button type="submit" variant="contained">
-            로그인
+            {formType === 'login' ? '로그인' : '회원가입'}
           </Button>
-          {/* <Button variant="outlined">회원가입</Button> */}
+          <Button variant="outlined" onClick={onToggleFormType}>
+            {formType === 'login' ? '회원가입하러 가기' : '로그인하러 가기'}
+          </Button>
         </Box>
       </Container>
     </>
@@ -104,3 +126,28 @@ const Auth = () => {
 };
 
 export default Auth;
+
+const Container = styled.div`
+  margin: 150px auto;
+  width: 300px;
+  height: 300px;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+`;
+
+const P = styled.p`
+  font-size: 0.8rem;
+  color: red;
+`;
+
+type Inputs = {
+  email: string;
+  password: string;
+};

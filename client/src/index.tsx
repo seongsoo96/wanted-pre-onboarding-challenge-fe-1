@@ -1,6 +1,7 @@
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import App from './App';
+import Header from './components/Header';
 import Expenses from './routes/expenses';
 import Invoices from './routes/invoices';
 import { GlobalStyle } from './styles/globalStyles';
@@ -11,6 +12,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <BrowserRouter>
     <GlobalStyle />
+    <Header />
     <App />
   </BrowserRouter>
 );

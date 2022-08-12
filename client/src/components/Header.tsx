@@ -1,47 +1,35 @@
 import styled from '@emotion/styled';
 import { Button } from '@mui/material';
-import React, { useEffect, useState } from 'react';
 import { Link, useMatch, useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { LoginState } from '../store/LoginStore';
 
 export default function Header() {
   const homeURL = useMatch('/');
   const authURL = useMatch('/auth');
   const navigate = useNavigate();
-  const [isLogined, setIsLogined] = useState(
-    localStorage.getItem('token') ? true : false
-  );
-  console.log(isLogined);
-
-  useEffect(() => {
-    if (!isLogined) {
-      navigate('/auth');
-    }
-  }, [isLogined, navigate]);
+  const [loginState, setLoginState] = useRecoilState(LoginState);
 
   const onLogout = () => {
     localStorage.removeItem('token');
-    setIsLogined(false);
+    setLoginState(false);
     alert('로그아웃 되었습니다.');
+    navigate('/');
   };
 
   return (
     <>
       <Title>{homeURL ? 'TodoList' : authURL ? 'Auth' : ''}</Title>
-      {console.log(`isLogined : ${isLogined}`)}
-      {isLogined && (
+      {loginState && (
         <Button variant="text" onClick={onLogout}>
           로그아웃
         </Button>
       )}
-      {!authURL ? (
+      {!authURL && (
         <Button variant="text" onClick={onLogout}>
           <Link to="/auth">
-            {isLogined ? '계정 바꾸러 가기' : '로그인하러 가기'}
+            {loginState ? '계정 바꾸러 가기' : '로그인하러 가기'}
           </Link>
-        </Button>
-      ) : (
-        <Button variant="text">
-          <Link to="/">홈</Link>
         </Button>
       )}
     </>

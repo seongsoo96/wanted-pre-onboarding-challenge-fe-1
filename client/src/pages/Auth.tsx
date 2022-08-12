@@ -1,10 +1,9 @@
 import styled from '@emotion/styled';
 import { Box, Button, TextField } from '@mui/material';
-import React, { ChangeEvent, useState } from 'react';
+import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
 import axios from 'axios';
-import { isAnyArrayBuffer } from 'util/types';
 import { useNavigate } from 'react-router-dom';
 
 const url = 'http://127.0.0.1:8080';
@@ -12,9 +11,17 @@ type FormType = 'login' | 'join';
 
 const Auth = () => {
   const navigate = useNavigate();
-  let hasToken = localStorage.getItem('token') ? true : false;
-  const [isLogin, setIsLogin] = useState(hasToken);
+  const [isLogined, setIsLogined] = useState(
+    localStorage.getItem('token') ? true : false
+  );
   const [formType, setFormType] = useState<FormType>('login');
+
+  if (isLogined) {
+    if (window.confirm('로그인 상태입니다. 로그아웃 하시겠습니까?')) {
+      localStorage.removeItem('token');
+      setIsLogined(false);
+    }
+  }
 
   const {
     register,
@@ -47,7 +54,8 @@ const Auth = () => {
         .post(`${url}/users/create`, data)
         .then((res) => {
           alert(res.data.message);
-          navigate('/');
+          navigate('/auth');
+          setFormType('login');
         })
         .catch((err) => {
           console.log(err);

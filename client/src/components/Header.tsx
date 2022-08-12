@@ -1,22 +1,34 @@
 import styled from '@emotion/styled';
 import { Button } from '@mui/material';
-import React from 'react';
-import { Link, useMatch } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useMatch, useNavigate } from 'react-router-dom';
 
 export default function Header() {
   const homeURL = useMatch('/');
   const authURL = useMatch('/auth');
+  const navigate = useNavigate();
+  const [isLogined, setIsLogined] = useState(
+    localStorage.getItem('token') ? true : false
+  );
+  console.log(isLogined);
 
-  let hasToken = localStorage.getItem('token') ? true : false;
+  useEffect(() => {
+    if (!isLogined) {
+      navigate('/auth');
+    }
+  }, [isLogined, navigate]);
 
   const onLogout = () => {
     localStorage.removeItem('token');
+    setIsLogined(false);
+    alert('로그아웃 되었습니다.');
   };
 
   return (
     <>
       <Title>{homeURL ? 'TodoList' : authURL ? 'Auth' : ''}</Title>
-      {hasToken && (
+      {console.log(`isLogined : ${isLogined}`)}
+      {isLogined && (
         <Button variant="text" onClick={onLogout}>
           로그아웃
         </Button>
@@ -24,7 +36,7 @@ export default function Header() {
       {!authURL ? (
         <Button variant="text" onClick={onLogout}>
           <Link to="/auth">
-            {hasToken ? '계정 바꾸러 가기' : '로그인하러 가기'}
+            {isLogined ? '계정 바꾸러 가기' : '로그인하러 가기'}
           </Link>
         </Button>
       ) : (
